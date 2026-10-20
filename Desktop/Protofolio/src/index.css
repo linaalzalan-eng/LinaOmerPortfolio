@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ============================================================
+   Design tokens — Terracotta & Sage
+   ============================================================ */
+:root {
+  --bg: #f7f4ee;
+  --surface: #fffdf9;
+  --surface-2: #efeae1;
+  --ink: #1a1714;
+  --muted: #5e574f;
+  --line: #e3dccf;
+  --primary: #b4472a;
+  --primary-hover: #9c3b21;
+  --on-primary: #ffffff;
+  --primary-soft: #f4e2da;
+  --accent: #4e6e5d;
+  --accent-soft: #dfe8e1;
+  --grid-dot: rgb(26 23 20 / 0.07);
+
+  --display-face: "Instrument Serif", ui-serif, Georgia, serif;
+  --body-face: "Geist", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1012;
+  --surface: #16171a;
+  --surface-2: #1e1f23;
+  --ink: #ede8e0;
+  --muted: #a39d94;
+  --line: #2a2b30;
+  --primary: #e2795c;
+  --primary-hover: #eb8f75;
+  --on-primary: #1a0f0b;
+  --primary-soft: #2c1c17;
+  --accent: #93b5a1;
+  --accent-soft: #19231f;
+  --grid-dot: rgb(237 232 224 / 0.06);
+}
+
+/* Arabic: the display serif has no Arabic glyphs, so use Plex for everything */
+[dir="rtl"] {
+  --display-face: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --body-face: "IBM Plex Sans Arabic", "Geist", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --font-display: var(--display-face);
+  --font-sans: var(--body-face);
+}
+
+@theme {
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    overflow-x: clip;
+  }
+
+  [dir="rtl"] body {
+    line-height: 1.8;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+/* Smooth color swap only while the theme is being toggled */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    fill 0.35s ease !important;
+}
+
+/* Subtle dotted paper texture */
+.bg-dots {
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+/* Uses an animation (not a transition) so it never clashes with hover transitions */
+.reveal {
+  opacity: 0;
+}
+.reveal.is-visible {
+  animation: rise 0.75s var(--ease-out-soft) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-rise {
+  animation: rise 0.8s var(--ease-out-soft) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* Arabic headings use Plex, which needs more weight to match the serif's presence */
+[dir="rtl"] .font-display {
+  font-weight: 600;
+  letter-spacing: 0;
+}
